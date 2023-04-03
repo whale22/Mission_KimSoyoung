@@ -59,4 +59,9 @@ public class LikeablePersonController {
 
         return "usr/likeablePerson/list";
     }
+
+    @GetMapping("/delete")
+    public String deleteLike() {
+        return "";
+    }
 }

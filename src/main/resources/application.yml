@@ -5,13 +5,13 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://127.0.0.1:3306/gram__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
     username: root
-    password:
+    password: 1234
   security:
     oauth2:
       client:
         registration:
           kakao:
-            clientId: 0e59d4068f2c83091f3c4511cb557c15
+            clientId: f11e89ca711ecc131d5ef5903bce49d8
             scope:
             client-name: Kakao
             authorization-grant-type: authorization_code
