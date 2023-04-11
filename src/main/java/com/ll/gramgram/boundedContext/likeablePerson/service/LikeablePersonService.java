@@ -48,4 +48,20 @@ public class LikeablePersonService {
     public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
         return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
     }
+
+    @Transactional
+    public RsData<LikeablePerson> unlike(Member member, long id) {
+        boolean check = false;
+        if ( member.hasConnectedInstaMember() == false ) {
+            return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
+        }
+
+        if(likeablePersonRepository.findById((int) id).get().getFromInstaMember().getId().equals(member.getInstaMember().getId())){
+            //삭제하려는 호감표시의 사용자 ID와 현재 접속한 유저의 인스타 id가 일치할 경우에만 삭제
+            likeablePersonRepository.deleteById((int) id);
+            return RsData.of("S-1", "입력하신 인스타유저를 호감상대에서 삭제하였습니다.");
+        }
+
+        return RsData.of("F-3", "다른 유저의 호감상대를 삭제할 수 없습니다.");
+    }
 }
