@@ -1,5 +1,6 @@
 package com.ll.gramgram.boundedContext.likeablePerson.service;
 
+import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
@@ -7,8 +8,6 @@ import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.ll.gramgram.boundedContext.member.entity.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +22,7 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
+
         if ( member.hasConnectedInstaMember() == false ) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
@@ -38,12 +38,14 @@ public class LikeablePersonService {
             for(LikeablePerson l : toInstaMemberExist){
                 if(l.getAttractiveTypeCode() == attractiveTypeCode){
                     return RsData.of("F-4", "동일한 상대를 등록할 수 없습니다.");
+                } else {
+                    l.setAttractiveTypeCodeAndModifyDate(attractiveTypeCode);
+                    return RsData.of("S-2", "입력하신 인스타유저(%s)의 유형을 변경하였습니다.".formatted(username));
                 }
             }
-            toInstaMemberExist.get(0).setAttractiveTypeCode(attractiveTypeCode);
-            return RsData.of("S-2", "입력하신 인스타유저(%s)의 유형을 변경하였습니다.".formatted(username));
         }
-        else if (likeablePersonRepository.countByFromInstaMemberId(member.getInstaMember().getId()) > 10) {
+
+        if (likeablePersonRepository.countByFromInstaMemberId(member.getInstaMember().getId()) >= AppConfig.getLikeablePersonFromMax()) {
             return RsData.of("F-3", "등록한 호감 상대가 10명을 초과했습니다.");
         }
 
