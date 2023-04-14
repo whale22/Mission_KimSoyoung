@@ -42,7 +42,6 @@ public class LikeablePersonController {
     @PostMapping("/add")
     public String add(@Valid AddForm addForm) {
         RsData<LikeablePerson> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
-
         if (createRsData.isFail()) {
             return rq.historyBack(createRsData);
         }
@@ -56,7 +55,7 @@ public class LikeablePersonController {
 
         // 인스타인증을 했는지 체크
         if (instaMember != null) {
-            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(instaMember.getId());
+            List<LikeablePerson> likeablePeople = instaMember.getFromLikeablePeople();
             model.addAttribute("likeablePeople", likeablePeople);
         }
 
@@ -65,7 +64,6 @@ public class LikeablePersonController {
 
     @GetMapping("/delete/{id}")
     public String deleteLike(@PathVariable("id") Long id) {
-        InstaMember instaMember = rq.getMember().getInstaMember();
         RsData<LikeablePerson> deleteRsData = likeablePersonService.unlike(rq.getMember(), id);
 
         return rq.redirectWithMsg("/likeablePerson/list", deleteRsData);
